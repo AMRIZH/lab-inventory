@@ -2,6 +2,8 @@
 
 This guide covers deploying the Lab Inventory Laravel application to Railway using GitHub integration with Supabase as the database.
 
+**🚨 Having deployment issues? See [RAILWAY-TROUBLESHOOTING.md](RAILWAY-TROUBLESHOOTING.md)**
+
 ## Prerequisites
 
 1. **GitHub Repository**: Your code should be pushed to GitHub

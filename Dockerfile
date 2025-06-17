@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libpq-dev \
+    libzip-dev \
     zip \
     unzip \
     nodejs \
@@ -20,7 +21,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd
+RUN docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd zip
 
 # Install additional tools for debugging
 RUN apt-get update && apt-get install -y curl
@@ -57,13 +58,17 @@ RUN if [ ! -f .env ]; then \
     fi
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --no-dev --optimize-autoloader --no-interaction --verbose
 
 # Install Node.js dependencies and build assets
-RUN npm ci && npm run build
+RUN npm ci --verbose && npm run build
 
-# Copy custom Apache configuration
-COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
+# Copy custom Apache configuration if it exists, otherwise use default
+RUN if [ -f docker/apache.conf ]; then \
+        cp docker/apache.conf /etc/apache2/sites-available/000-default.conf; \
+    else \
+        echo "Warning: docker/apache.conf not found, using default Apache configuration"; \
+    fi
 
 # Create storage and cache directories if they don't exist
 RUN mkdir -p /var/www/html/storage/logs \
@@ -82,6 +87,15 @@ RUN php artisan key:generate --force \
     && php artisan config:cache \
     && php artisan route:cache \
     && php artisan view:cache
+
+# Copy and set up health check script if it exists
+RUN if [ -f docker/healthcheck.sh ]; then \
+        cp docker/healthcheck.sh /usr/local/bin/healthcheck.sh && \
+        chmod +x /usr/local/bin/healthcheck.sh; \
+    else \
+        echo '#!/bin/bash\ncurl -f http://localhost/health || exit 1' > /usr/local/bin/healthcheck.sh && \
+        chmod +x /usr/local/bin/healthcheck.sh; \
+    fi
 
 # Expose port 80
 EXPOSE 80
