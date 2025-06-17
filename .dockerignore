@@ -1,0 +1,66 @@
+# Docker ignore file for Lab Inventory project
+
+# Laravel specific (but keep .env.production)
+.env
+.env.backup
+.env.docker
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+
+# Node modules and build artifacts
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Storage and cache
+storage/app/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+storage/logs/*
+bootstrap/cache/*
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+README.md
+CARA-MENJALANKAN.txt
+
+# Development scripts
+start-*.bat
+*.bat
+
+# Test files
+tests/
+phpunit.xml
+
+# Vendor (will be installed during build)
+vendor/
+
+# Development docker files
+docker-compose.override.yml
+.env.docker

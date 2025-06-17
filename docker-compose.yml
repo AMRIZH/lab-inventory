@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  lab-inventory:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lab-inventory-app
+    ports:
+      - "8080:80"
+    environment:
+      - APP_NAME=Lab Inventory
+      - APP_ENV=production
+      - APP_KEY=base64:FLkfOrzIgcbQV3/EtQ3mcjMRnHsFP1kxf0Cngirnw6w=
+      - APP_DEBUG=false
+      - APP_URL=http://localhost:8080
+      
+      # Supabase Configuration
+      - DB_CONNECTION=pgsql
+      - DB_HOST=db.icdscorcuiucwipusohb.supabase.co
+      - DB_PORT=5432
+      - DB_DATABASE=postgres
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=${SUPABASE_DB_PASSWORD:-Alexgaming123!}
+        # Supabase Service Configuration
+      - SUPABASE_URL=https://icdscorcuiucwipusohb.supabase.co
+      - SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZHNjb3JjdWl1Y3dpcHVzb2hiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyMjA1NTEsImV4cCI6MjA2NDc5NjU1MX0.Vu2iXcsqM6aJnGP4qp0WiMLeDTryZTE_jtwybp7d800
+      
+      # Supabase Email Confirmation Redirect URLs
+      - APP_URL=${APP_URL:-http://localhost:8080}
+      - SUPABASE_REDIRECT_URL=${APP_URL}/auth/callback
+      - SUPABASE_EMAIL_CONFIRM_REDIRECT_URL=${APP_URL}/auth/confirm
+      
+      # Cache and Session
+      - CACHE_DRIVER=file
+      - SESSION_DRIVER=file
+      - SESSION_LIFETIME=120      # Logging
+      - LOG_CHANNEL=stack
+      - LOG_LEVEL=info
+      
+      # Optional: Auto-migrate on startup
+      # - AUTO_MIGRATE=true
+      
+    volumes:
+      - ./storage:/var/www/html/storage
+      - ./bootstrap/cache:/var/www/html/bootstrap/cache
+    restart: unless-stopped
+    healthcheck:
+      test: ["/usr/local/bin/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  storage:
+  cache:

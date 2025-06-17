@@ -1,0 +1,48 @@
+===============================================
+    CARA MENJALANKAN INVENTARIS LAB
+===============================================
+
+🚀 CARA TERMUDAH:
+   Double-click file: start-and-open.bat
+   
+   ✅ Server otomatis start
+   ✅ Browser otomatis terbuka
+   ✅ Langsung ke dashboard
+
+===============================================
+
+🔧 JIKA ADA MASALAH:
+   Double-click file: start-inventaris-lab.bat
+   
+   ✅ Cek sistem lengkap
+   ✅ Informasi detail
+   ✅ Tips troubleshooting
+
+===============================================
+
+🎯 CARA MANUAL:
+   Double-click file: start-server.bat
+   
+   ✅ Start server sederhana
+   ✅ Buka browser manual ke:
+       http://127.0.0.1:8000
+
+===============================================
+
+📱 URL PENTING:
+   Dashboard: http://127.0.0.1:8000/dashboard
+   Lab FKI:   http://127.0.0.1:8000/labs/lab-fki
+   Export:    http://127.0.0.1:8000/export
+
+===============================================
+
+⚠️ PENTING:
+   - Jangan tutup command window saat server berjalan
+   - Tekan Ctrl+C untuk stop server
+   - Pastikan PHP sudah terinstall
+
+===============================================
+
+📖 BACA README.md UNTUK INFO LENGKAP
+
+===============================================
