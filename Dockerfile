@@ -1,4 +1,4 @@
-# Use PHP 8.2 with Apache
+# Railway Dockerfile for GitHub deployment
 FROM php:8.2-apache
 
 # Set working directory
@@ -11,58 +11,56 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    libzip-dev \
     libpq-dev \
     zip \
     unzip \
     nodejs \
     npm \
-    && docker-php-ext-install pdo_pgsql pgsql mbstring exif pcntl bcmath gd zip
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Install PHP extensions
+RUN docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd
+
+# Install additional tools for debugging
+RUN apt-get update && apt-get install -y curl
 
 # Enable Apache modules
 RUN a2enmod rewrite headers
 
-# Install additional tools for debugging
-RUN apt-get install -y curl
+# Set global ServerName to suppress Apache warning
+RUN echo "ServerName lab-inventory.railway.app" >> /etc/apache2/apache2.conf
+
+# Get latest Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Configure Apache DocumentRoot to point to Laravel's public directory
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Set global ServerName to suppress Apache warning
-RUN echo "ServerName lab-inventory.local" >> /etc/apache2/apache2.conf
-
-# Copy application code
+# Copy application files
 COPY . /var/www/html
 
-# Create a basic .env file for build process if it doesn't exist
+# Create environment file from Railway template if .env doesn't exist
 RUN if [ ! -f .env ]; then \
-        if [ -f .env.production ]; then \
+        if [ -f .env.railway ]; then \
+            cp .env.railway .env; \
+        elif [ -f .env.production ]; then \
             cp .env.production .env; \
         else \
-            echo "APP_NAME=Laravel" > .env; \
+            echo "APP_NAME=Lab Inventory" > .env; \
             echo "APP_ENV=production" >> .env; \
             echo "APP_KEY=" >> .env; \
             echo "APP_DEBUG=false" >> .env; \
-            echo "APP_URL=http://localhost" >> .env; \
-            echo "DB_CONNECTION=pgsql" >> .env; \
         fi \
     fi
 
 # Install PHP dependencies
-RUN composer install --optimize-autoloader --no-dev
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Install Node.js dependencies and build assets
-RUN npm install && npm run build
-
-# Set proper permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
+RUN npm ci && npm run build
 
 # Copy custom Apache configuration
 COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
@@ -74,21 +72,19 @@ RUN mkdir -p /var/www/html/storage/logs \
     && mkdir -p /var/www/html/storage/framework/views \
     && mkdir -p /var/www/html/bootstrap/cache
 
-# Generate application key only if needed during build
-RUN if [ -z "$(grep '^APP_KEY=' .env | cut -d'=' -f2 | tr -d ' ')" ] || [ "$(grep '^APP_KEY=' .env | cut -d'=' -f2 | tr -d ' ')" = "" ]; then \
-        php artisan key:generate --force; \
-    fi
+# Set proper permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache
 
-# Create entrypoint script
-COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-COPY docker/healthcheck.sh /usr/local/bin/healthcheck.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/healthcheck.sh
+# Generate application key and optimize Laravel
+RUN php artisan key:generate --force \
+    && php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache
 
 # Expose port 80
 EXPOSE 80
-
-# Use entrypoint script
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 # Start Apache
 CMD ["apache2-foreground"]

@@ -12,8 +12,17 @@ Complete Docker deployment guide for the Lab Inventory System with **Supabase** 
 - ✅ **Multi-environment** support (dev, staging, production)
 - ✅ **Auto-restart** policies
 - ✅ **Volume persistence** for storage and cache
+- ✅ **Railway deployment** ready
 
-## � Quick Start
+## 🚀 Deployment Options
+
+### 1. Local Docker Development
+For local development and testing
+
+### 2. Railway Cloud Deployment  
+For production deployment with GitHub integration - see [RAILWAY-DEPLOYMENT.md](RAILWAY-DEPLOYMENT.md)
+
+## 🏃 Quick Start
 
 ### Prerequisites
 - **Docker 20.10+** and **Docker Compose 2.0+**

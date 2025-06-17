@@ -10,6 +10,16 @@ use App\Http\Controllers\ItemUnitController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\AuthController;
 
+// Health Check Route (for Railway and monitoring)
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'ok',
+        'timestamp' => now()->toISOString(),
+        'app' => config('app.name'),
+        'version' => '1.0.0'
+    ]);
+});
+
 // Authentication Routes
 
 Route::get('/', [AuthController::class, 'showLogin'])->name('login');

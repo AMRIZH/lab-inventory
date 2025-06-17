@@ -15,7 +15,20 @@ Sistem manajemen inventaris modern untuk Laboratorium Teknik Informatika yang di
 
 ## 🚀 Quick Start - Menjalankan Aplikasi
 
-### 🎯 Pilihan 1: Docker (Recommended untuk Production)
+### 🎯 Pilihan 1: Railway Cloud Deployment (Production)
+
+**Deploy ke Railway dengan GitHub integration:**
+
+1. **Push ke GitHub repository**
+2. **Connect ke Railway** - [railway.app](https://railway.app)
+3. **Deploy from GitHub** - Select repository
+4. **Set environment variables** - Lihat [RAILWAY-DEPLOYMENT.md](RAILWAY-DEPLOYMENT.md)
+
+**Akses aplikasi di:** https://your-app-name.up.railway.app
+
+**📖 Panduan lengkap:** [RAILWAY-DEPLOYMENT.md](RAILWAY-DEPLOYMENT.md)
+
+### 🎯 Pilihan 2: Docker Local (Recommended untuk Testing)
 
 **Cara termudah dengan Docker:**
 ```bash
@@ -28,7 +41,7 @@ docker-compose up -d
 
 **Akses aplikasi di:** http://localhost:8080
 
-### 🎯 Pilihan 2: Development Server (Recommended untuk Development)
+### 🎯 Pilihan 3: Development Server (Recommended untuk Development)
 
 **Double-click salah satu file batch berikut:**
 
@@ -468,6 +481,17 @@ docker exec -it lab-inventory-app bash
 ```
 
 ### 🚀 **Production Deployment**
+
+#### Railway Cloud Deployment (Recommended)
+```bash
+# Push to GitHub repository
+git push origin main
+
+# Deploy automatically via Railway GitHub integration
+# See RAILWAY-DEPLOYMENT.md for full setup guide
+```
+
+#### Docker Local/Server Deployment
 ```bash
 # Build optimized assets
 npm run build
@@ -477,6 +501,11 @@ docker-compose -f docker-compose.yml up -d --build
 
 # Atau setup di web server (Apache/Nginx)
 ```
+
+**📚 Deployment Guides:**
+- **Railway Cloud**: [RAILWAY-DEPLOYMENT.md](RAILWAY-DEPLOYMENT.md)
+- **Docker**: [DOCKER-README.md](DOCKER-README.md)
+- **Supabase Config**: [SUPABASE-EMAIL-CONFIG.md](SUPABASE-EMAIL-CONFIG.md)
 
 ## 🎨 Technology Stack
 
@@ -497,6 +526,7 @@ docker-compose -f docker-compose.yml up -d --build
 
 ### 🐳 **Infrastructure**
 - **Containerization**: Docker & Docker Compose
+- **Cloud Deployment**: Railway (GitHub integration)
 - **Web Server**: Apache 2.4 (in container)
 - **Process Manager**: Apache MPM Prefork
 - **Health Checks**: Custom health check script
