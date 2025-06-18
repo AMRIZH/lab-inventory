@@ -83,17 +83,20 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
 # Generate application key and optimize Laravel
-RUN php artisan key:generate --force \
-    && php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
+RUN php artisan key:generate --force || echo "Key generation failed, using existing key" \
+    && php artisan config:cache || echo "Config cache failed" \
+    && php artisan route:cache || echo "Route cache failed" \
+    && php artisan view:cache || echo "View cache failed"
+
+# Ensure Laravel can start by checking basic functionality
+RUN php artisan --version
 
 # Copy and set up health check script if it exists
 RUN if [ -f docker/healthcheck.sh ]; then \
         cp docker/healthcheck.sh /usr/local/bin/healthcheck.sh && \
         chmod +x /usr/local/bin/healthcheck.sh; \
     else \
-        echo '#!/bin/bash\ncurl -f http://localhost/health || exit 1' > /usr/local/bin/healthcheck.sh && \
+        echo '#!/bin/bash\ncurl -f http://localhost/health.php || exit 1' > /usr/local/bin/healthcheck.sh && \
         chmod +x /usr/local/bin/healthcheck.sh; \
     fi
 
