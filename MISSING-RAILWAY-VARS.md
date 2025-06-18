@@ -1,3 +1,28 @@
+# 🔧 FIXED: .env Parsing Error
+
+## ❌ **Error Resolved**
+```
+The environment file is invalid!
+Failed to parse dotenv file. Encountered unexpected whitespace at [Lab Inventory].
+```
+
+## 🔍 **Root Cause**
+The `.env.railway` file had unquoted values with spaces:
+```bash
+# ❌ INCORRECT (causes error)
+APP_NAME=Lab Inventory
+MAIL_FROM_NAME=Lab Inventory
+
+# ✅ CORRECT (fixed)
+APP_NAME="Lab Inventory"
+MAIL_FROM_NAME="Lab Inventory"
+```
+
+## ✅ **Fix Applied**
+Updated `.env.railway` to quote all values with spaces.
+
+---
+
 # 🚨 Missing Railway Environment Variables
 
 Based on your config files, you're missing these **REQUIRED** environment variables in Railway:
@@ -64,7 +89,7 @@ FILESYSTEM_DISK=local
 QUEUE_CONNECTION=sync
 MAIL_MAILER=log
 MAIL_FROM_ADDRESS=noreply@gmail.com
-MAIL_FROM_NAME=Lab Inventory
+MAIL_FROM_NAME="Lab Inventory"
 BCRYPT_ROUNDS=10
 VIEW_COMPILED_PATH=/var/www/html/storage/framework/views
 SANCTUM_STATEFUL_DOMAINS=localhost,127.0.0.1

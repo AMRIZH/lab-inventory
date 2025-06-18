@@ -43,19 +43,24 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 # Copy application files
 COPY . /var/www/html
 
-# Create environment file from Railway template if .env doesn't exist
-RUN if [ ! -f .env ]; then \
-        if [ -f .env.railway ]; then \
-            cp .env.railway .env; \
-        elif [ -f .env.production ]; then \
-            cp .env.production .env; \
-        else \
-            echo "APP_NAME=Lab Inventory" > .env; \
-            echo "APP_ENV=production" >> .env; \
-            echo "APP_KEY=" >> .env; \
-            echo "APP_DEBUG=false" >> .env; \
-        fi \
-    fi
+# Create a minimal .env file for build process
+RUN echo 'APP_NAME="Lab Inventory"' > .env \
+    && echo 'APP_ENV=production' >> .env \
+    && echo 'APP_KEY=base64:FLkfOrzIgcbQV3/EtQ3mcjMRnHsFP1kxf0Cngirnw6w=' >> .env \
+    && echo 'APP_DEBUG=false' >> .env \
+    && echo 'APP_URL=http://localhost' >> .env \
+    && echo 'DB_CONNECTION=pgsql' >> .env \
+    && echo 'DB_HOST=localhost' >> .env \
+    && echo 'DB_PORT=5432' >> .env \
+    && echo 'DB_DATABASE=postgres' >> .env \
+    && echo 'DB_USERNAME=postgres' >> .env \
+    && echo 'DB_PASSWORD=dummy' >> .env \
+    && echo 'CACHE_DRIVER=file' >> .env \
+    && echo 'SESSION_DRIVER=file' >> .env \
+    && echo 'LOG_CHANNEL=stack' >> .env
+
+# Validate .env file format
+RUN echo "Checking .env file:" && head -5 .env
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction --verbose
