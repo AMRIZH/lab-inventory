@@ -5,7 +5,7 @@ Copy these variables to your Railway project environment settings:
 ## Required Variables (Copy these exactly)
 
 ```bash
-APP_NAME=Lab Inventory
+APP_NAME="Lab Inventory"
 APP_ENV=production
 APP_KEY=base64:FLkfOrzIgcbQV3/EtQ3mcjMRnHsFP1kxf0Cngirnw6w=
 APP_DEBUG=false
